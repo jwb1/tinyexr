@@ -501,12 +501,19 @@ extern int LoadEXRFromMemory(float **out_rgba, int *width, int *height,
 #define TINYEXR_IMPLEMENTATION_DEFINED
 
 #ifdef _WIN32
-
+/*
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <windows.h>  // for UTF-8
-
+*/
+// Maybe windows.h is already included.
+#ifndef _WINDOWS_
+#ifndef CP_UTF8
+#define CP_UTF8 65001
+#endif
+extern "C" int MultiByteToWideChar(unsigned int CodePage, unsigned long dwFlags, const char* lpMultiByteStr, int cbMultiByte, wchar_t* lpWideCharStr, int cchWideChar);
+#endif
 #endif
 
 #include <algorithm>
