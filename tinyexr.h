@@ -1,3 +1,5 @@
+#ifndef TINYEXR_H_
+#define TINYEXR_H_
 /*
 Copyright (c) 2014 - 2019, Syoyo Fujita and many contributors.
 All rights reserved.
@@ -63,8 +65,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // End of OpenEXR license -------------------------------------------------
 
-#ifndef TINYEXR_H_
-#define TINYEXR_H_
 
 //
 //
@@ -7029,6 +7029,13 @@ void *mz_zip_extract_archive_file_to_heap(const char *pZip_filename,
 
 // Reuse MINIZ_LITTE_ENDIAN macro
 
+#if defined(_M_IX86) || defined(_M_X64) || defined(__i386__) || \
+    defined(__i386) || defined(__i486__) || defined(__i486) ||  \
+    defined(i386) || defined(__ia64__) || defined(__x86_64__)
+// MINIZ_X86_OR_X64_CPU is only used to help set the below macros.
+#define MINIZ_X86_OR_X64_CPU 1
+#endif
+
 #if defined(__sparcv9)
 // Big endian
 #else
@@ -8314,9 +8321,9 @@ const int HUF_DECMASK = HUF_DECSIZE - 1;
 
 struct HufDec {  // short code    long code
   //-------------------------------
-  int len : 8;   // code length    0
-  int lit : 24;  // lit      p size
-  int *p;        // 0      lits
+  unsigned int len : 8;   // code length    0
+  unsigned int lit : 24;  // lit      p size
+  unsigned int *p;        // 0      lits
 };
 
 inline long long hufLength(long long code) { return code & 63; }
@@ -8772,14 +8779,14 @@ static bool hufBuildDecTable(const long long *hcode,  // i : encoding table
       pl->lit++;
 
       if (pl->p) {
-        int *p = pl->p;
-        pl->p = new int[pl->lit];
+        unsigned int *p = pl->p;
+        pl->p = new unsigned int[pl->lit];
 
         for (int i = 0; i < pl->lit - 1; ++i) pl->p[i] = p[i];
 
         delete[] p;
       } else {
-        pl->p = new int[1];
+        pl->p = new unsigned int[1];
       }
 
       pl->p[pl->lit - 1] = im;
